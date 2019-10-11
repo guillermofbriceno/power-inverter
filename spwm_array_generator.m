@@ -49,13 +49,13 @@ for i = 1:max_time
 endfor
 
 fileID = fopen('/home/guillermo/school/fall-2019/design/pwm.out', 'w');
-fprintf(fileID,'const double pwmCycles[] = {');
+fprintf(fileID,'const uint32_t pwmCycles[] = {');
 
 for i = 1:length(pwm_dutycycles)
   if i < length(pwm_dutycycles)
-    fprintf(fileID,'%.8f,',pwm_dutycycles(i));
+    fprintf(fileID,'%d,',pwm_dutycycles(i));
   else
-    fprintf(fileID,'%.8f',pwm_dutycycles(i));
+    fprintf(fileID,'%d',pwm_dutycycles(i));
   endif
 endfor
 

@@ -22,7 +22,7 @@
 #define MCU_FREQ 80000000
 #define DEADBAND 8
 
-extern const double pwmCycles[];
+extern const uint32_t pwmCycles[];
 const uint32_t arr_size = 1000;
 volatile uint32_t arr_index = 0;
 
@@ -57,7 +57,7 @@ void timer0IntHandler() {
 	}
 	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, pwmCycles[arr_index]);
 
-	arr_index += 1;
+	arr_index++;
 }
 
 void initPWMTimer(uint32_t periodCycles) {
