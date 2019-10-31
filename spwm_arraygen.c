@@ -3,7 +3,7 @@
 #include "macros.h"
 
 volatile uint32_t pwmCycles[RAMP_FREQ / SINE_FREQ];
-const uint32_t arr_size = RAMP_FREQ / SINE_FREQ;
+const uint32_t arraySize = RAMP_FREQ / SINE_FREQ;
 
 double sawtooth(double x) {
         double slope = 2  * RAMP_FREQ;
@@ -21,7 +21,7 @@ void generateArray(double percentAmplitude) {
         uint32_t i;
         uint32_t j;
 
-        for (i = 0; i < arr_size; i++) {
+        for (i = 0; i < arraySize; i++) {
                 for (j = 0; j < samplesInRampPeriod; j++) {
                         double sine_t = percentAmplitude * sin(2 * PI * SINE_FREQ * totalElapsedTime);
                         double saw_t = sawtooth(periodElapsedTime);

@@ -15,9 +15,10 @@
 #include "spwm_arraygen.h"
 #include "macros.h"
 
-extern volatile uint32_t pwmCycles[];
-extern const uint32_t arr_size;
-volatile uint32_t arr_index = 0;
+extern volatile uint32_t        pwmCycles[];
+extern const    uint32_t        arraySize;
+volatile        uint32_t        arrayIndex = 0;
+volatile        double          amplitude = MAX_AMP;
 
 void initGPIO() {
         SysCtlPeripheralEnable(SWPWM_PERIPH);
@@ -43,12 +44,12 @@ void timer0IntHandler() {
         status = TimerIntStatus(TIMER0_BASE, true);
         TimerIntClear(TIMER0_BASE, status);
 
-        if (arr_index == arr_size) {
-                arr_index = 0;
+        if (arrayIndex == arraySize) {
+                arrayIndex = 0;
         }
-        PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, pwmCycles[arr_index]);
+        PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, pwmCycles[arrayIndex]);
 
-        arr_index += 1;
+        arrayIndex += 1;
 }
 
 void initPWMTimer(uint32_t periodCycles) {
@@ -59,9 +60,29 @@ void initPWMTimer(uint32_t periodCycles) {
         IntEnable(INT_TIMER0A);
         TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
         IntMasterEnable();
-        TimerLoadSet(TIMER0_BASE, TIMER_A, periodCycles - 1);
+        TimerLoadSet(TIMER0_BASE, TIMER_A, periodCycles - 1 + ADD_DELAY);
         //TimerLoadSet(TIMER0_BASE, TIMER_A, 100000);
         TimerEnable(TIMER0_BASE, TIMER_A);
+}
+
+void trackIncrease() {
+        if ((amplitude + AMP_STEP) >= MAX_AMP) {
+                // ensure amplitude stays at MAX_AMP
+                amplitude = MAX_AMP;
+                return;
+        } else {
+                amplitude += AMP_STEP;
+        }
+}
+
+void trackDecrease() {
+        if (amplitutude - AMP_STEP) <= 0.0) {
+                // ensure amplitude does not go below 0
+               amplitude = 0.0; 
+               return;
+        } else {
+                amplitude -= AMP_STEP;
+        }
 }
 
 int main(void) {
