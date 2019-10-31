@@ -11,7 +11,7 @@
 #define DEADBAND        8                       // Amount of deadband in inverted PWM pin in cycles
 #define PI              3.1415926539	        //
 #define TIMESTEP        0.0000001               // Sampling timestep. Higher -> more precision
-#define ADD_DELAY       0                       // Add cycle delay to array increment timer for debugging
+#define ADD_DELAY       100000                  // Add cycle delay to array increment timer for debugging
 
 // Define Maximum Power Point Tracking params
 #define MAX_AMP         0.98                    // Maximum sinewave amplitude in percent

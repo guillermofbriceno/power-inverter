@@ -15,6 +15,7 @@ void generateArray(double percentAmplitude) {
         uint32_t sawPeriodInClockCycles = MCU_FREQ / RAMP_FREQ;
         double periodElapsedTime = 0.0;
         double totalElapsedTime = 0.0;
+        double dutyCycle = 0.0;
 
         uint32_t samplesHigh = 0;
         uint32_t samplesLow = 0;
@@ -34,7 +35,7 @@ void generateArray(double percentAmplitude) {
                         periodElapsedTime = periodElapsedTime + TIMESTEP;
                         totalElapsedTime = totalElapsedTime + TIMESTEP;
                 }
-                double dutyCycle = samplesHigh / (samplesHigh + samplesLow);
+                dutyCycle = (double)samplesHigh / (samplesHigh + samplesLow);
                 uint32_t dutyCycleInClockCycles = dutyCycle * sawPeriodInClockCycles;
                 pwmCycles[i] = dutyCycleInClockCycles;
 

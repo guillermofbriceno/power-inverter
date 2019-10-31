@@ -15,17 +15,19 @@
 #include "spwm_arraygen.h"
 #include "macros.h"
 
-extern volatile uint32_t        pwmCycles[];
+extern volatile uint32_t        pwmCycles[1000];
 extern const    uint32_t        arraySize;
 volatile        uint32_t        arrayIndex = 0;
 volatile        double          amplitude = MAX_AMP;
+extern          void            generateArray(double percentAmplitude);
 
-void initGPIO() {
-        SysCtlPeripheralEnable(SWPWM_PERIPH);
-        while(!SysCtlPeripheralReady(SWPWM_PERIPH));
+void initPeriph(uint32_t periph) {
+        SysCtlPeripheralEnable(periph);
+        while(!SysCtlPeripheralReady(periph));
 }
 
 void initPWM() {
+        initPeriph(SWPWM_PERIPH);
         SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM0);
         //PWMClockSet(PWM0_BASE, PWM_SYSCLK_DIV_1);
         GPIOPinConfigure(GPIO_PB6_M0PWM0);
@@ -37,6 +39,21 @@ void initPWM() {
         PWMDeadBandEnable(PWM0_BASE, PWM_GEN_0, DEADBAND, DEADBAND);
         PWMGenEnable(PWM0_BASE, PWM_GEN_0);
         PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT | PWM_OUT_1_BIT, true);
+}
+
+void initMPPT() {
+        //initPeriph(SYSCTL_PERIPH_ADC0);
+        //initPeriph(SYSCTL_PERIPH_GPIOD);
+        //GPIOPinTypeADC(GPIO_PORTD_BASE, GPIO_PIN_0);
+        ////set the clock-
+
+        //ADCSequenceConfigure(ADC0_BASE, 1, ADC_TRIGGER_PROCESSOR, 0);
+        //ADCSequenceStepConfigure(ADC0_BASE, 1, 0, ADC_CTL_TS);
+        //ADCSequenceStepConfigure(ADC0_BASE, 1, 1, ADC_CTL_TS);
+        //ADCSequenceStepConfigure(ADC0_BASE, 1, 2, ADC_CTL_TS);
+        //ADCSequenceStepConfigure(ADC0_BASE, 1, 3, ADC_CTL_TS | ADC_CTL_TE | ADC_CTL_END);
+        //
+        //ADCSeqenceEnable(ADC0_BASE, 1);
 }
 
 void timer0IntHandler() {
@@ -61,7 +78,6 @@ void initPWMTimer(uint32_t periodCycles) {
         TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
         IntMasterEnable();
         TimerLoadSet(TIMER0_BASE, TIMER_A, periodCycles - 1 + ADD_DELAY);
-        //TimerLoadSet(TIMER0_BASE, TIMER_A, 100000);
         TimerEnable(TIMER0_BASE, TIMER_A);
 }
 
@@ -76,7 +92,7 @@ void trackIncrease() {
 }
 
 void trackDecrease() {
-        if (amplitutude - AMP_STEP) <= 0.0) {
+        if ((amplitude - AMP_STEP) <= 0.0) {
                 // ensure amplitude does not go below 0
                amplitude = 0.0; 
                return;
@@ -89,9 +105,8 @@ int main(void) {
         SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
 
         generateArray(0.98);
-
-        initGPIO();
         initPWM();
+        initMPPT();
 
         uint32_t sawPeriodCycles = MCU_FREQ / RAMP_FREQ; //period of sawtooth in cycles
         PWMGenPeriodSet(PWM0_BASE, PWM_GEN_0, sawPeriodCycles);
