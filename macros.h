@@ -5,7 +5,7 @@
 #define SWPWM_PERIPH 	SYSCTL_PERIPH_GPIOB     // PERIPH for PWM port
 
 // Define generation params
-#define RAMP_FREQ       60000                   // Freqency of sawtooth/ramp function function in Hz
+#define SAW_FREQ        60000                   // Freqency of sawtooth/ramp function function in Hz
 #define SINE_FREQ       60                      // Sine wave frequency in Hz
 #define MCU_FREQ        80000000                // Frequency of microcontroller in Hz (actually set by SysCtlClockSet)
 #define DEADBAND        8                       // Amount of deadband in inverted PWM pin in cycles

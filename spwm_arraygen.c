@@ -2,20 +2,19 @@
 #include <stdint.h>
 #include "macros.h"
 
-volatile uint32_t pwmCycles[RAMP_FREQ / SINE_FREQ];
-const uint32_t arraySize = RAMP_FREQ / SINE_FREQ;
+volatile uint32_t pwmCycles[SAW_FREQ / SINE_FREQ];
+const    uint32_t arraySize = SAW_FREQ / SINE_FREQ;
 
 double sawtooth(double x) {
-        double slope = 2  * RAMP_FREQ;
+        double slope = 2  * SAW_FREQ;
         return (slope * x) - 1;
 }
 
 void generateArray(double percentAmplitude) {
-        uint32_t samplesInRampPeriod = (1.0 / RAMP_FREQ) / TIMESTEP;
-        uint32_t sawPeriodInClockCycles = MCU_FREQ / RAMP_FREQ;
+        uint32_t samplesInRampPeriod = (1.0 / SAW_FREQ) / TIMESTEP;
+        uint32_t sawPeriodInClockCycles = MCU_FREQ / SAW_FREQ;
         double periodElapsedTime = 0.0;
         double totalElapsedTime = 0.0;
-        double dutyCycle = 0.0;
 
         uint32_t samplesHigh = 0;
         uint32_t samplesLow = 0;
@@ -35,7 +34,7 @@ void generateArray(double percentAmplitude) {
                         periodElapsedTime = periodElapsedTime + TIMESTEP;
                         totalElapsedTime = totalElapsedTime + TIMESTEP;
                 }
-                dutyCycle = (double)samplesHigh / (samplesHigh + samplesLow);
+                double dutyCycle = (double)samplesHigh / (samplesHigh + samplesLow);
                 uint32_t dutyCycleInClockCycles = dutyCycle * sawPeriodInClockCycles;
                 pwmCycles[i] = dutyCycleInClockCycles;
 

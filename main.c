@@ -99,19 +99,34 @@ void trackDecrease() {
         } else {
                 amplitude -= AMP_STEP;
         }
+} 
+
+void initComplete() {
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0x0) ;
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_PIN_3) ;
+}
+
+void initLEDs() {
+        SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+        while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF)){}
+        GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_3 | GPIO_PIN_2 | GPIO_PIN_1);
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);
 }
 
 int main(void) {
         SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
 
+        initLEDs();
+
         generateArray(0.98);
         initPWM();
         initMPPT();
-
-        uint32_t sawPeriodCycles = MCU_FREQ / RAMP_FREQ; //period of sawtooth in cycles
+       
+        uint32_t sawPeriodCycles = MCU_FREQ / SAW_FREQ; //period of sawtooth in cycles
         PWMGenPeriodSet(PWM0_BASE, PWM_GEN_0, sawPeriodCycles);
-
         initPWMTimer(sawPeriodCycles);
+
+        initComplete();
 
         while(true) {}
 }
